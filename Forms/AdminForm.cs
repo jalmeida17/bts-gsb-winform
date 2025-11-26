@@ -12,9 +12,12 @@ namespace bts_gsb.Forms
 {
     public partial class AdminForm : Form
     {
-        public AdminForm()
+        private User currentUser;
+
+        public AdminForm(User user)
         {
             InitializeComponent();
+            currentUser = user;
         }
 
         private void logOutButton_click (object sender, EventArgs e)

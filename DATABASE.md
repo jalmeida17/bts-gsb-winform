@@ -45,7 +45,6 @@ CREATE TABLE Prescription (
     id_prescription INT AUTO_INCREMENT PRIMARY KEY,
     id_patient INT NOT NULL,
     id_user INT NOT NULL,
-    quantity INT,
     validity DATE,
     FOREIGN KEY (id_patient) REFERENCES Patient(id_patient)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -59,6 +58,7 @@ CREATE TABLE Prescription (
 CREATE TABLE Appartient (
     id_prescription INT NOT NULL,
     id_medicine INT NOT NULL,
+    quantity INT,
     PRIMARY KEY (id_prescription, id_medicine),
     FOREIGN KEY (id_prescription) REFERENCES Prescription(id_prescription)
         ON DELETE CASCADE ON UPDATE CASCADE,

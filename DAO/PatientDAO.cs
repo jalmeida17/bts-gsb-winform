@@ -16,12 +16,12 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand(@"SELECT pa.*, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM patients pa JOIN users u ON pa.id_users = u.id_user;", connection);
+                    var command = new MySqlCommand(@"SELECT pa.*, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM Patient pa JOIN User u ON pa.id_user = u.id_user;", connection);
                     using var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
                         var patient = new Patient(
-                            reader.GetInt32("id_patients"),
+                            reader.GetInt32("id_patient"),
                             reader.GetString("name"),
                             reader.GetString("firstname"),
                             reader.GetBoolean("gender"),
@@ -53,13 +53,13 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand(@"SELECT pa.*, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM patients pa JOIN users u ON pa.id_users = u.id_user WHERE pa.id_patients = @id;", connection);
+                    var command = new MySqlCommand(@"SELECT pa.*, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM Patient pa JOIN User u ON pa.id_user = u.id_user WHERE pa.id_patient = @id;", connection);
                     command.Parameters.AddWithValue("@id", id);
                     using var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         var patient = new Patient(
-                            reader.GetInt32("id_patients"),
+                            reader.GetInt32("id_patient"),
                             reader.GetString("name"),
                             reader.GetString("firstname"),
                             reader.GetBoolean("gender"),
@@ -91,12 +91,12 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("INSERT INTO patients (name, firstname, gender, age, id_users) VALUES (@name, @firstname, @gender, @age, @id_users);", connection);
+                    var command = new MySqlCommand("INSERT INTO Patient (name, firstname, gender, age, id_user) VALUES (@name, @firstname, @gender, @age, @id_user);", connection);
                     command.Parameters.AddWithValue("@name", patient.Name);
                     command.Parameters.AddWithValue("@firstname", patient.Firstname);
                     command.Parameters.AddWithValue("@gender", patient.Gender);
                     command.Parameters.AddWithValue("@age", (object?)patient.Age ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@id_users", idUser);
+                    command.Parameters.AddWithValue("@id_user", idUser);
                     command.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -113,13 +113,13 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("UPDATE patients SET name = @name, firstname = @firstname, gender = @gender, age = @age, id_users = @id_users WHERE id_patients = @id;", connection);
-                    command.Parameters.AddWithValue("@id", patient.Id_Patients);
+                    var command = new MySqlCommand("UPDATE Patient SET name = @name, firstname = @firstname, gender = @gender, age = @age, id_user = @id_user WHERE id_patient = @id;", connection);
+                    command.Parameters.AddWithValue("@id", patient.id_patient);
                     command.Parameters.AddWithValue("@name", patient.Name);
                     command.Parameters.AddWithValue("@firstname", patient.Firstname);
                     command.Parameters.AddWithValue("@gender", patient.Gender);
                     command.Parameters.AddWithValue("@age", (object?)patient.Age ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@id_users", idUser);
+                    command.Parameters.AddWithValue("@id_user", idUser);
                     command.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -136,7 +136,7 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("DELETE FROM patients WHERE id_patients = @id;", connection);
+                    var command = new MySqlCommand("DELETE FROM Patient WHERE id_patient = @id;", connection);
                     command.Parameters.AddWithValue("@id", id);
                     command.ExecuteNonQuery();
                 }

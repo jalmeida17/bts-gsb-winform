@@ -1,4 +1,5 @@
-﻿using System;
+﻿using bts_gsb.DAO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,6 +29,28 @@ namespace bts_gsb.Forms
             MainForm mainForm = new MainForm();
             mainForm.Show();
 
+        }
+
+        private void updatePasswordButton_Click(object sender, EventArgs e)
+        {
+            string email = this.emailTextBox.Text;
+            string oldPassword = this.oldPasswordTextBox.Text;
+            string newPassword = this.newPasswordTextBox.Text;
+
+            try
+            {
+                UserDAO userDAO = new UserDAO();
+                userDAO.UpdatePassword(email, oldPassword, newPassword);
+                this.Hide();
+                MainForm mainForm = new MainForm();
+                mainForm.Show();
+                MessageBox.Show("Password updated successfully!");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

@@ -16,21 +16,20 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand(@"SELECT p.*, pa.id_patients, pa.name AS patient_name, pa.firstname AS patient_firstname, pa.gender AS patient_gender, pa.age AS patient_age, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM prescriptions p JOIN patients pa ON p.id_patients = pa.id_patients JOIN users u ON p.id_users = u.id_user;", connection);
+                    var command = new MySqlCommand(@"SELECT p.*, pa.id_patient, pa.name AS patient_name, pa.firstname AS patient_firstname, pa.gender AS patient_gender, pa.age AS patient_age, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM Prescription p JOIN Patient pa ON p.id_patient = pa.id_patient JOIN User u ON p.id_user = u.id_user;", connection);
                     using var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
                         var prescription = new Prescription(
                             reader.GetInt32("id_prescription"),
-                            reader.GetInt32("id_patients"),
-                            reader.GetInt32("id_users"),
-                            reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetInt32("quantity"),
+                            reader.GetInt32("id_patient"),
+                            reader.GetInt32("id_user"),
                             reader.IsDBNull(reader.GetOrdinal("validity")) ? null : reader.GetDateTime("validity")
                         );
                         // Fill Patient
                         prescription.Patient = new Patient
                         {
-                            Id_Patients = reader.GetInt32("id_patients"),
+                            id_patient = reader.GetInt32("id_patient"),
                             Name = reader.GetString("patient_name"),
                             Firstname = reader.GetString("patient_firstname"),
                             Gender = reader.IsDBNull(reader.GetOrdinal("patient_gender")) ? null : reader.GetBoolean("patient_gender"),
@@ -63,21 +62,20 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand(@"SELECT p.*, pa.id_patients, pa.name AS patient_name, pa.firstname AS patient_firstname, pa.gender AS patient_gender, pa.age AS patient_age, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM prescriptions p JOIN patients pa ON p.id_patients = pa.id_patients JOIN users u ON p.id_users = u.id_user WHERE p.id_prescription = @id;", connection);
+                    var command = new MySqlCommand(@"SELECT p.*, pa.id_patient, pa.name AS patient_name, pa.firstname AS patient_firstname, pa.gender AS patient_gender, pa.age AS patient_age, u.id_user, u.name AS user_name, u.firstname AS user_firstname, u.role AS user_role, u.email AS user_email FROM Prescription p JOIN Patient pa ON p.id_patient = pa.id_patient JOIN User u ON p.id_user = u.id_user WHERE p.id_prescription = @id;", connection);
                     command.Parameters.AddWithValue("@id", id);
                     using var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         var prescription = new Prescription(
                             reader.GetInt32("id_prescription"),
-                            reader.GetInt32("id_patients"),
-                            reader.GetInt32("id_users"),
-                            reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetInt32("quantity"),
+                            reader.GetInt32("id_patient"),
+                            reader.GetInt32("id_user"),
                             reader.IsDBNull(reader.GetOrdinal("validity")) ? null : reader.GetDateTime("validity")
                         );
                         prescription.Patient = new Patient
                         {
-                            Id_Patients = reader.GetInt32("id_patients"),
+                            id_patient = reader.GetInt32("id_patient"),
                             Name = reader.GetString("patient_name"),
                             Firstname = reader.GetString("patient_firstname"),
                             Gender = reader.IsDBNull(reader.GetOrdinal("patient_gender")) ? null : reader.GetBoolean("patient_gender"),
@@ -102,19 +100,18 @@ namespace bts_gsb.DAO
             }
         }
 
-        public void Create(Prescription prescription, int idUser)
+        public int Create(Prescription prescription, int idUser)
         {
             using (var connection = db.GetConnection())
             {
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("INSERT INTO prescriptions (id_patients, id_users, quantity, validity) VALUES (@id_patients, @id_users, @quantity, @validity);", connection);
-                    command.Parameters.AddWithValue("@id_patients", prescription.Id_Patients);
-                    command.Parameters.AddWithValue("@id_users", idUser);
-                    command.Parameters.AddWithValue("@quantity", (object?)prescription.Quantity ?? DBNull.Value);
+                    var command = new MySqlCommand("INSERT INTO Prescription (id_patient, id_user, validity) VALUES (@id_patient, @id_user, @validity); SELECT LAST_INSERT_ID();", connection);
+                    command.Parameters.AddWithValue("@id_patient", prescription.id_patient);
+                    command.Parameters.AddWithValue("@id_user", idUser);
                     command.Parameters.AddWithValue("@validity", (object?)prescription.Validity ?? DBNull.Value);
-                    command.ExecuteNonQuery();
+                    return Convert.ToInt32(command.ExecuteScalar());
                 }
                 catch (Exception ex)
                 {
@@ -130,11 +127,10 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("UPDATE prescriptions SET id_patients = @id_patients, id_users = @id_users, quantity = @quantity, validity = @validity WHERE id_prescription = @id;", connection);
+                    var command = new MySqlCommand("UPDATE Prescription SET id_patient = @id_patient, id_user = @id_user, validity = @validity WHERE id_prescription = @id;", connection);
                     command.Parameters.AddWithValue("@id", prescription.Id_Prescription);
-                    command.Parameters.AddWithValue("@id_patients", prescription.Id_Patients);
-                    command.Parameters.AddWithValue("@id_users", idUser);
-                    command.Parameters.AddWithValue("@quantity", (object?)prescription.Quantity ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@id_patient", prescription.id_patient);
+                    command.Parameters.AddWithValue("@id_user", idUser);
                     command.Parameters.AddWithValue("@validity", (object?)prescription.Validity ?? DBNull.Value);
                     command.ExecuteNonQuery();
                 }
@@ -152,7 +148,7 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("DELETE FROM prescriptions WHERE id_prescription = @id;", connection);
+                    var command = new MySqlCommand("DELETE FROM Prescription WHERE id_prescription = @id;", connection);
                     command.Parameters.AddWithValue("@id", id);
                     command.ExecuteNonQuery();
                 }
@@ -171,16 +167,15 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("SELECT * FROM prescriptions WHERE id_patients = @patientId LIMIT 1;", connection);
+                    var command = new MySqlCommand("SELECT * FROM Prescription WHERE id_patient = @patientId LIMIT 1;", connection);
                     command.Parameters.AddWithValue("@patientId", patientId);
                     using var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         return new Prescription(
                             reader.GetInt32("id_prescription"),
-                            reader.GetInt32("id_patients"),
-                            reader.GetInt32("id_users"),
-                            reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetInt32("quantity"),
+                            reader.GetInt32("id_patient"),
+                            reader.GetInt32("id_user"),
                             reader.IsDBNull(reader.GetOrdinal("validity")) ? null : reader.GetDateTime("validity")
                         );
                     }
@@ -202,16 +197,15 @@ namespace bts_gsb.DAO
                 try
                 {
                     connection.Open();
-                    var command = new MySqlCommand("SELECT * FROM prescriptions WHERE id_patients = @patientId;", connection);
+                    var command = new MySqlCommand("SELECT * FROM Prescription WHERE id_patient = @patientId;", connection);
                     command.Parameters.AddWithValue("@patientId", patientId);
                     using var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
                         var prescription = new Prescription(
                             reader.GetInt32("id_prescription"),
-                            reader.GetInt32("id_patients"),
-                            reader.GetInt32("id_users"),
-                            reader.IsDBNull(reader.GetOrdinal("quantity")) ? null : reader.GetInt32("quantity"),
+                            reader.GetInt32("id_patient"),
+                            reader.GetInt32("id_user"),
                             reader.IsDBNull(reader.GetOrdinal("validity")) ? null : reader.GetDateTime("validity")
                         );
                         prescriptions.Add(prescription);

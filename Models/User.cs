@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿    using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 public class User
@@ -6,6 +6,7 @@ public class User
 
     //ceci est une propriété, elle permet d'acceder en lecture et en écriture
     //à notre attribut de classe via les méthodes get et set
+    [Key]
     public int Id { get; set; }
     public string Name { get; set; }
     public string Firstname { get; set; }

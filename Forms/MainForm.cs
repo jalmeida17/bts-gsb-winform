@@ -24,25 +24,23 @@ namespace bts_gsb
 
         private void buttonLogin_Click(object sender, EventArgs e)
         {
-            SHA256 sha256 = SHA256.Create();
-            byte[] hashValue = sha256.ComputeHash(Encoding.UTF8.GetBytes(this.textBoxLoginPassword.Text));
-            string hashString = BitConverter.ToString(hashValue).Replace("-", "").ToLowerInvariant();
+            string password = this.textBoxLoginPassword.Text;
             string email = this.textBoxLoginMail.Text;
 
             UserDAO userDAO = new UserDAO();
 
-            User loggedInUser = userDAO.Login(email, hashString);
+            User loggedInUser = userDAO.Login(email, password);
 
             if (loggedInUser != null && loggedInUser.Role == true)
             {
                 this.Hide();
-                AdminForm adminForm = new AdminForm();
+                AdminForm adminForm = new AdminForm(loggedInUser);
                 adminForm.Show();
             }
             else if (loggedInUser != null && loggedInUser.Role != true)
             {
                 this.Hide();
-                DoctorForm doctorForm = new DoctorForm();
+                DoctorForm doctorForm = new DoctorForm(loggedInUser);
                 doctorForm.Show();
             }
             else

@@ -10,30 +10,27 @@ public class Prescription
     public int Id_Prescription { get; set; }
 
     [ForeignKey("Patient")]
-    public int Id_Patients { get; set; }
+    public int id_patient { get; set; }
 
     [ForeignKey("User")]
-    public int Id_Users { get; set; }
-
-    public int? Quantity { get; set; }
+    public int id_user { get; set; }
 
     public DateTime? Validity { get; set; }
 
     // Navigation properties
-    public Patient Patient { get; set; }
-    public User User { get; set; }
+    public Patient? Patient { get; set; }
+    public User? User { get; set; }
     public ICollection<Appartient> Appartients { get; set; } = new List<Appartient>();
 
     public Prescription()
     {
     }
 
-    public Prescription(int id , int id_patient, int id_user, int? quantity, DateTime? validity)
+    public Prescription(int id , int id_patient, int id_user, DateTime? validity)
     {
         Id_Prescription = id;
-        Id_Patients = id_patient;
-        Id_Users = id_user;
-        Quantity = quantity;
+        this.id_patient = id_patient;
+        this.id_user = id_user;
         Validity = validity;
     }
 }

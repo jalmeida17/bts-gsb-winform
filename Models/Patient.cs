@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Patient
 {
     [Key]
-    public int Id_Patients { get; set; }
+    public int id_patient { get; set; }
 
     [ForeignKey("User")]
-    public int Id_Users { get; set; }
+    public int id_user { get; set; }
 
     [Required, MaxLength(100)]
     public string Name { get; set; }
@@ -30,7 +30,7 @@ public class Patient
 
     public Patient(int id, string name, string firstname, bool gender, int? age)
     {
-        Id_Patients = id;
+        id_patient = id;
         Name = name;
         Firstname = firstname;
         Gender = gender;

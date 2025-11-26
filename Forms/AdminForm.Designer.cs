@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminForm));
             logOutButton = new Button();
             SuspendLayout();
             // 
@@ -47,8 +48,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(logOutButton);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AdminForm";
-            Text = "Admin Interface";
+            Text = "- Admin Interface";
             Load += AdminForm_Load;
             ResumeLayout(false);
         }

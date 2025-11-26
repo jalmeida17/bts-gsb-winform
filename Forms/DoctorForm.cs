@@ -8,6 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Kernel.Font;
+using iText.IO.Font.Constants;
+using iText.Layout.Properties;
+using iText.Kernel.Colors;
 
 namespace bts_gsb.Forms
 {
@@ -403,6 +410,160 @@ namespace bts_gsb.Forms
             catch (Exception ex)
             {
                 MessageBox.Show($"Error deleting patient(s): {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void exportPDFButton_Click(object sender, EventArgs e)
+        {
+            StringBuilder log = new StringBuilder();
+            log.AppendLine("=== PDF EXPORT LOG ===");
+
+            try
+            {
+                if (dataGridPrescription.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Please select a prescription to export.", "No Prescription Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                log.AppendLine("✓ Step 1: Selection OK");
+
+                Prescription selectedPrescription = dataGridPrescription.SelectedRows[0].DataBoundItem as Prescription;
+                if (selectedPrescription == null)
+                {
+                    MessageBox.Show("Invalid prescription selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                log.AppendLine($"✓ Step 2: Prescription ID = {selectedPrescription.Id_Prescription}");
+
+                AppartientDAO appartientDAO = new AppartientDAO();
+                List<Appartient> medicines = appartientDAO.GetMedicinesForPrescription(selectedPrescription.Id_Prescription);
+                log.AppendLine($"✓ Step 3: Medicines loaded = {medicines?.Count ?? 0}");
+
+                // SAVE FILE DIALOG
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Title = "Save Prescription";
+                dialog.Filter = "PDF (*.pdf)|*.pdf";
+                dialog.FileName = $"Prescription_{selectedPrescription.Patient?.Name ?? "Patient"}_{selectedPrescription.Patient?.Firstname ?? ""}_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                string filePath = dialog.FileName;
+                log.AppendLine($"✓ Step 4: File path = {filePath}");
+
+                DateTime validityDate = selectedPrescription.Validity ?? DateTime.Now;
+                log.AppendLine($"✓ Step 5: Validity date = {validityDate}");
+
+                log.AppendLine("→ Step 6: Creating font...");
+                PdfFont boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                log.AppendLine("✓ Step 6: Font created");
+
+                log.AppendLine("→ Step 7: Creating PDF writer...");
+                using (PdfWriter writer = new PdfWriter(filePath))
+                {
+                    log.AppendLine("✓ Step 7: Writer created");
+                    log.AppendLine("→ Step 8: Creating PDF document...");
+                    using (PdfDocument pdf = new PdfDocument(writer))
+                    {
+                        log.AppendLine("✓ Step 8: PDF document created");
+                        log.AppendLine("→ Step 9: Creating Document...");
+                        using (Document doc = new Document(pdf))
+                        {
+                            log.AppendLine("✓ Step 9: Document created");
+
+                            log.AppendLine("→ Step 10: Adding title...");
+                            doc.Add(new Paragraph("MEDICAL PRESCRIPTION")
+                                .SetFont(boldFont)
+                                .SetFontSize(22)
+                                .SetTextAlignment(TextAlignment.CENTER));
+                            doc.Add(new Paragraph("\n"));
+                            log.AppendLine("✓ Step 10: Title added");
+
+                            log.AppendLine("→ Step 11: Building patient info...");
+                            string patientName = (selectedPrescription.Patient?.Name ?? "[Unknown]") + " " + (selectedPrescription.Patient?.Firstname ?? "");
+                            string doctorName = (selectedPrescription.User?.Name ?? "[Doctor]") + " " + (selectedPrescription.User?.Firstname ?? "");
+                            string patientAge = selectedPrescription.Patient?.Age?.ToString() ?? "N/A";
+                            string patientGender = selectedPrescription.Patient?.Gender == true ? "Male" : "Female";
+
+                            doc.Add(new Paragraph($"Patient: {patientName}"));
+                            doc.Add(new Paragraph($"Age: {patientAge}"));
+                            doc.Add(new Paragraph($"Gender: {patientGender}"));
+                            doc.Add(new Paragraph($"Doctor: Dr {doctorName}"));
+                            doc.Add(new Paragraph($"Validity: {validityDate:dd/MM/yyyy}"));
+                            doc.Add(new Paragraph("\n"));
+                            log.AppendLine("✓ Step 11: Patient info added");
+
+                            log.AppendLine("→ Step 12: Creating table...");
+                            float[] widths = { 3, 2, 1 };
+                            Table table = new Table(UnitValue.CreatePercentArray(widths)).UseAllAvailableWidth();
+
+                            table.AddHeaderCell(new Cell().Add(new Paragraph("Medicine")).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+                            table.AddHeaderCell(new Cell().Add(new Paragraph("Dosage")).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+                            table.AddHeaderCell(new Cell().Add(new Paragraph("Quantity")).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+
+                            log.AppendLine("→ Step 13: Adding medicines...");
+                            foreach (var medicine in medicines)
+                            {
+                                if (medicine?.Medicine != null)
+                                {
+                                    string medNameSafe = medicine.Medicine.Name ?? "[Name missing]";
+                                    string dosageSafe = medicine.Medicine.Dosage ?? "N/A";
+                                    int qty = medicine.Quantity ?? 0;
+
+                                    table.AddCell(new Cell().Add(new Paragraph(medNameSafe)));
+                                    table.AddCell(new Cell().Add(new Paragraph(dosageSafe)));
+                                    table.AddCell(new Cell().Add(new Paragraph(qty.ToString())));
+                                }
+                            }
+
+                            doc.Add(table);
+                            log.AppendLine("✓ Step 13: Table added");
+
+                            log.AppendLine("→ Step 14: Adding signature...");
+                            doc.Add(new Paragraph("\n\nDoctor's signature:\n\n"));
+                            doc.Add(new Paragraph($"Dr. {doctorName}"));
+                            doc.Add(new Paragraph($"Email: {selectedPrescription.User?.Email ?? "N/A"}"));
+                            log.AppendLine("✓ Step 14: Signature added");
+
+                            log.AppendLine("→ Step 15: Closing document...");
+                            doc.Close();
+                            log.AppendLine("✓ Step 15: Document closed");
+                        }
+                    }
+                }
+
+                log.AppendLine("→ Step 16: Opening file...");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = filePath,
+                    UseShellExecute = true
+                });
+
+                log.AppendLine("✓ SUCCESS!");
+                MessageBox.Show($"Prescription exported successfully!", "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                log.AppendLine("\n❌ ERROR OCCURRED!");
+                log.AppendLine($"Error Type: {ex.GetType().Name}");
+                log.AppendLine($"Error Message: {ex.Message}");
+                log.AppendLine($"\nStack Trace:\n{ex.StackTrace}");
+
+                if (ex.InnerException != null)
+                {
+                    log.AppendLine($"\nInner Exception: {ex.InnerException.GetType().Name}");
+                    log.AppendLine($"Inner Message: {ex.InnerException.Message}");
+                    log.AppendLine($"Inner Stack:\n{ex.InnerException.StackTrace}");
+                }
+
+                MessageBox.Show(
+                    log.ToString(),
+                    "PDF Export Error - Full Log",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
     }

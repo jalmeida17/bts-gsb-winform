@@ -44,6 +44,7 @@
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
+            exportPDFButton = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewDoctorListMedicine).BeginInit();
             ((System.ComponentModel.ISupportInitialize)medicineDAOBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridPrescription).BeginInit();
@@ -174,11 +175,22 @@
             label4.TabIndex = 12;
             label4.Text = "Patients";
             // 
+            // exportPDFButton
+            // 
+            exportPDFButton.Location = new Point(272, 454);
+            exportPDFButton.Name = "exportPDFButton";
+            exportPDFButton.Size = new Size(39, 23);
+            exportPDFButton.TabIndex = 13;
+            exportPDFButton.Text = "PDF";
+            exportPDFButton.UseVisualStyleBackColor = true;
+            exportPDFButton.Click += exportPDFButton_Click;
+            // 
             // DoctorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(877, 517);
+            Controls.Add(exportPDFButton);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -220,5 +232,6 @@
         private Label label2;
         private Label label3;
         private Label label4;
+        private Button exportPDFButton;
     }
 }

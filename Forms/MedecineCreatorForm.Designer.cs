@@ -90,6 +90,7 @@
             // 
             nameTextBox.Location = new Point(35, 36);
             nameTextBox.Name = "nameTextBox";
+            nameTextBox.PlaceholderText = "Medecine";
             nameTextBox.Size = new Size(172, 23);
             nameTextBox.TabIndex = 5;
             // 
@@ -97,6 +98,7 @@
             // 
             moleculeTextBox.Location = new Point(35, 80);
             moleculeTextBox.Name = "moleculeTextBox";
+            moleculeTextBox.PlaceholderText = "Molecule";
             moleculeTextBox.Size = new Size(172, 23);
             moleculeTextBox.TabIndex = 6;
             // 
@@ -104,6 +106,7 @@
             // 
             dosageTextBox.Location = new Point(35, 124);
             dosageTextBox.Name = "dosageTextBox";
+            dosageTextBox.PlaceholderText = "Dosage";
             dosageTextBox.Size = new Size(172, 23);
             dosageTextBox.TabIndex = 7;
             // 
@@ -111,6 +114,7 @@
             // 
             descriptionTextBox.Location = new Point(35, 168);
             descriptionTextBox.Name = "descriptionTextBox";
+            descriptionTextBox.PlaceholderText = "Description";
             descriptionTextBox.Size = new Size(172, 23);
             descriptionTextBox.TabIndex = 8;
             // 

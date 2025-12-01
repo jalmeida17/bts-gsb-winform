@@ -44,6 +44,7 @@
             // 
             ageTextBox.Location = new Point(36, 126);
             ageTextBox.Name = "ageTextBox";
+            ageTextBox.PlaceholderText = "Age (ex: 24)";
             ageTextBox.Size = new Size(147, 23);
             ageTextBox.TabIndex = 16;
             // 
@@ -51,6 +52,7 @@
             // 
             firstnameTextBox.Location = new Point(36, 82);
             firstnameTextBox.Name = "firstnameTextBox";
+            firstnameTextBox.PlaceholderText = "Doe";
             firstnameTextBox.Size = new Size(147, 23);
             firstnameTextBox.TabIndex = 15;
             // 
@@ -58,6 +60,7 @@
             // 
             nameFirstBox.Location = new Point(36, 38);
             nameFirstBox.Name = "nameFirstBox";
+            nameFirstBox.PlaceholderText = "John";
             nameFirstBox.Size = new Size(147, 23);
             nameFirstBox.TabIndex = 14;
             // 

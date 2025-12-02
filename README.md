@@ -256,7 +256,7 @@ This project is developed for educational purposes as part of the BTS program.
 
 ## Credits
 
-Pdf Export feature -> RyukSylux
+Pdf Export feature -> **[RyukSylux](https://github.com/RyukSylux)**
 
 ## Acknowledgments
 

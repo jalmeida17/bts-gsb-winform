@@ -105,7 +105,7 @@ The **GSB Medical Prescription Management System** is a Windows Forms applicatio
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/RyukSylux/bts-gsb-winform.git
+git clone https://github.com/jalmeida17/bts-gsb-winform
 cd bts-gsb-winform
 ```
 
@@ -354,7 +354,7 @@ command.Parameters.AddWithValue("@email", email);
 
 **PdfExport by:** [RyukSylux](https://github.com/RyukSylux)
 
-**GitHub Repository:** [bts-gsb-winform](https://github.com/RyukSylux/bts-gsb-winform)
+**GitHub Repository:** [bts-gsb-winform](https://github.com/jalmeida17/bts-gsb-winform)
 
 **Academic Context:** BTS SIO SLAM Final Exam Project
 

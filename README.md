@@ -31,6 +31,7 @@
   - [Admin Interface]()
 - [Architecture](#architecture)
 - [Database](./DATABASE.md) [ Location: [./DATABASE.md](./DATABASE.md) ]
+- [Dump](./DUMP.sql) [ Location: [./DUMP.sql](./DUMP.sql) ]
 - [Security](#security)
 - [Credits](#credits)
 

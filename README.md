@@ -130,7 +130,7 @@ This will start:
 4. Execute the SQL schema from [DATABASE.md](DATABASE.md)
 5. Execute the DUMP in [DUMP.sql](DUMP.sql)
 
-### Step 4: Create First Admin User (NOT NEEDED ACCOUNTS ALREADY EXIST)
+### Step 4: Create First Admin User (NOT NEEDED ACCOUNTS ALREADY EXIST LOOK DOWN AT DEFAULT LOGIN CREDENTIALS)
 
 Run this SQL query to create your first admin account:
 
@@ -138,16 +138,6 @@ Run this SQL query to create your first admin account:
 INSERT INTO User (firstname, name, role, email, password)
 VALUES ('Admin', 'User', 1, 'admin@gsb.fr', SHA2('admin123', 256));
 ```
-
-Accounts that already exist in the DUMP : 
-
-**Doctor**
-User : doctor
-Pass : doctor
-
-**Admin**
-User : admin
-Pass : admin
 
 ### Step 5: Build and Run the Application
 
@@ -163,8 +153,11 @@ dotnet run --project bts-gsb.csproj
 
 ### Default Login Credentials
 
-- **Email**: `admin@gsb.fr`
-- **Password**: `admin123`
+- **Doctor Email**: `doctor`
+- **Doctor Password**: `doctor`
+
+- **Admin Email**: `admin`
+- **Admin Password**: `admin`
 
 ---
 

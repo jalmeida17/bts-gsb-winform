@@ -15,6 +15,8 @@
 
 [Features](#features) • [Installation](#installation) • [User Guide](./GUIDE.md) • [Architecture](#architecture) • [Database](./DATABASE.md)
 
+[Version française](./README.fr.md)
+
 </div>
 
 ---
